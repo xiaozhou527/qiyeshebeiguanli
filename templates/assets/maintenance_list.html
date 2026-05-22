@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block page_title %}资产维修{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-header">
+        <h3>维修记录</h3>
+        {% if can_manage %}
+        <a class="btn btn-primary" href="{% url 'assets:maintenance_create' %}">登记维修</a>
+        {% endif %}
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>资产</th>
+                <th>状态</th>
+                <th>维修单位</th>
+                <th>维修人员</th>
+                <th>时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.asset.name }}</td>
+                <td>{{ record.get_status_display }}</td>
+                <td>{{ record.maintenance_vendor|default:"-" }}</td>
+                <td>{{ record.maintainer|default:"-" }}</td>
+                <td>{{ record.started_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="muted">暂无记录</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

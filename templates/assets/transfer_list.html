@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block page_title %}资产调拨{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-header">
+        <h3>调拨记录</h3>
+        {% if can_manage %}
+        <a class="btn btn-primary" href="{% url 'assets:transfer_create' %}">登记调拨</a>
+        {% endif %}
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>资产</th>
+                <th>调出部门</th>
+                <th>调入部门</th>
+                <th>新使用人</th>
+                <th>调拨时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.asset.name }}</td>
+                <td>{{ record.from_department.name }}</td>
+                <td>{{ record.to_department.name }}</td>
+                <td>{{ record.to_user.username|default:"-" }}</td>
+                <td>{{ record.transferred_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="muted">暂无记录</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

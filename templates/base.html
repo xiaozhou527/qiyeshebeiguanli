@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ system_name }}</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-badge">AMS</div>
+                <div>
+                    <h1>{{ system_name }}</h1>
+                    <p>普通版管理后台</p>
+                </div>
+            </div>
+            {% if request.user.is_authenticated %}
+            <nav class="nav">
+                <a href="{% url 'dashboard:home' %}">仪表盘</a>
+                <a href="{% url 'assets:asset_list' %}">资产台账</a>
+                <a href="{% url 'assets:category_list' %}">资产分类</a>
+                <a href="{% url 'assets:department_list' %}">部门管理</a>
+                <a href="{% url 'assets:borrow_list' %}">领用归还</a>
+                <a href="{% url 'assets:transfer_list' %}">资产调拨</a>
+                <a href="{% url 'assets:maintenance_list' %}">资产维修</a>
+                <a href="{% url 'assets:scrap_list' %}">资产报废</a>
+                <a href="{% url 'assets:operation_log_list' %}">操作日志</a>
+                {% if can_manage_users %}
+                <a href="{% url 'core:user_list' %}">用户管理</a>
+                {% endif %}
+                <a href="/api/v1/assets/" target="_blank">开放接口</a>
+            </nav>
+            {% endif %}
+        </aside>
+        <main class="content">
+            <header class="topbar">
+                <div>
+                    <h2>{% block page_title %}企业资产管理{% endblock %}</h2>
+                    <p class="muted">先满足日常管理，再为后续审批流、通知、报表导出预留扩展空间。</p>
+                </div>
+                {% if request.user.is_authenticated %}
+                <div class="user-panel">
+                    <span>{{ request.user.username }}</span>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light">退出</button>
+                    </form>
+                </div>
+                {% endif %}
+            </header>
+
+            {% if messages %}
+            <section class="messages">
+                {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </section>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block page_title %}仪表盘{% endblock %}
+
+{% block content %}
+{% if current_department %}
+<section class="scope-banner">
+    当前数据范围：{{ current_department.name }}
+    {% if not can_manage %} / 仅显示与当前账号相关的资产{% endif %}
+</section>
+{% endif %}
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <span>资产总数</span>
+        <strong>{{ metrics.asset_total }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>部门数量</span>
+        <strong>{{ metrics.department_total }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>借用中</span>
+        <strong>{{ metrics.borrowing_total }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>维修处理中</span>
+        <strong>{{ metrics.maintenance_total }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>待审批报废</span>
+        <strong>{{ metrics.scrap_pending_total }}</strong>
+    </article>
+</section>
+
+<section class="panel-grid">
+    <article class="panel">
+        <div class="panel-header">
+            <h3>资产状态分布</h3>
+            <a class="btn btn-light" href="{% url 'assets:asset_list' %}">查看资产</a>
+        </div>
+        <div class="chips">
+            {% for item in asset_status_stats %}
+            <span class="chip">{{ item.status }} / {{ item.total }}</span>
+            {% empty %}
+            <span class="muted">暂无数据</span>
+            {% endfor %}
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-header">
+            <h3>最近新增资产</h3>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>名称</th>
+                    <th>分类</th>
+                    <th>部门</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asset in latest_assets %}
+                <tr>
+                    <td><a href="{% url 'assets:asset_detail' asset.pk %}">{{ asset.code }}</a></td>
+                    <td>{{ asset.name }}</td>
+                    <td>{{ asset.category.name }}</td>
+                    <td>{{ asset.department.name|default:"-" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="muted">暂无资产数据</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+</section>
+
+<section class="panel">
+    <div class="panel-header">
+        <h3>最近操作日志</h3>
+        <a class="btn btn-light" href="{% url 'assets:operation_log_list' %}">查看全部</a>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>时间</th>
+                <th>用户</th>
+                <th>动作</th>
+                <th>对象</th>
+                <th>摘要</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in latest_logs %}
+            <tr>
+                <td>{{ log.created_at|date:"Y-m-d H:i" }}</td>
+                <td>{{ log.user.username|default:"系统" }}</td>
+                <td>{{ log.get_action_display }}</td>
+                <td>{{ log.target_label|default:log.target_type }}</td>
+                <td>{{ log.message }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="muted">暂无日志</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

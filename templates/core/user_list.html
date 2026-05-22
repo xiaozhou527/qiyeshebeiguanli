@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block page_title %}用户管理{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-header">
+        <h3>用户列表</h3>
+        <div class="button-row">
+            {% if can_register_asset_manager %}
+            <a class="btn btn-primary" href="{% url 'core:register_asset_manager' %}">注册资产管理员</a>
+            {% endif %}
+            {% if can_register_employee %}
+            <a class="btn btn-primary" href="{% url 'core:register_employee' %}">注册普通员工</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="scope-banner">
+        当前可管理角色：{{ managed_role_label }}
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>用户名</th>
+                <th>姓名</th>
+                <th>角色</th>
+                <th>部门</th>
+                <th>岗位</th>
+                <th>创建人</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.first_name|default:"-" }}</td>
+                <td>
+                    {% for group in user.groups.all %}
+                    {% if group.name == 'asset_manager' %}资产管理员{% elif group.name == 'employee' %}普通员工{% elif group.name == 'admin' %}管理员{% else %}{{ group.name }}{% endif %}
+                    {% empty %}
+                    -
+                    {% endfor %}
+                </td>
+                <td>{{ user.profile.department.name|default:"-" }}</td>
+                <td>{{ user.profile.title|default:"-" }}</td>
+                <td>{{ user.profile.created_by.username|default:"系统" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="muted">暂无可管理用户</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

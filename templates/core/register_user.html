@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-header">
+        <h3>{{ page_title }}</h3>
+        <a class="btn btn-light" href="{% url 'core:user_list' %}">返回用户管理</a>
+    </div>
+    <div class="scope-banner">
+        本次将创建角色：{{ target_role }}
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-grid">
+            {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}
+                <div class="field-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        {% for error in form.non_field_errors %}
+        <div class="field-error">{{ error }}</div>
+        {% endfor %}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">创建账号</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

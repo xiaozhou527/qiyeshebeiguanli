@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block page_title %}资产报废{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-header">
+        <h3>报废记录</h3>
+        {% if can_manage %}
+        <a class="btn btn-primary" href="{% url 'assets:scrap_create' %}">登记报废</a>
+        {% endif %}
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>资产</th>
+                <th>申请人</th>
+                <th>审批状态</th>
+                <th>申请时间</th>
+                <th>审批时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.asset.name }}</td>
+                <td>{{ record.applicant.username|default:"-" }}</td>
+                <td>{{ record.get_approval_status_display }}</td>
+                <td>{{ record.requested_at|date:"Y-m-d H:i" }}</td>
+                <td>{{ record.approved_at|date:"Y-m-d H:i"|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="muted">暂无记录</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

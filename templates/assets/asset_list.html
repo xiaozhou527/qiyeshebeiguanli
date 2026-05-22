@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block page_title %}资产台账{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-header">
+        <h3>资产列表</h3>
+        {% if can_manage %}
+        <a class="btn btn-primary" href="{% url 'assets:asset_create' %}">新增资产</a>
+        {% endif %}
+    </div>
+    {% if current_department %}
+    <div class="scope-banner">当前数据范围：{{ current_department.name }}</div>
+    {% endif %}
+    <form class="filter-bar" method="get">
+        <input class="form-control" type="text" name="q" value="{{ request.GET.q }}" placeholder="搜索资产编号或名称">
+        <select class="form-select" name="status">
+            <option value="">全部状态</option>
+            {% for value, label in status_choices %}
+            <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-light" type="submit">筛选</button>
+    </form>
+
+    <div class="chips">
+        {% for item in summary %}
+        <span class="chip">{{ item.status }}: {{ item.total }}</span>
+        {% endfor %}
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>编号</th>
+                <th>名称</th>
+                <th>分类</th>
+                <th>部门</th>
+                <th>使用人</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asset in assets %}
+            <tr>
+                <td>{{ asset.code }}</td>
+                <td>{{ asset.name }}</td>
+                <td>{{ asset.category.name }}</td>
+                <td>{{ asset.department.name|default:"-" }}</td>
+                <td>{{ asset.assignee.username|default:"-" }}</td>
+                <td>{{ asset.get_status_display }}</td>
+                <td>
+                    <a href="{% url 'assets:asset_detail' asset.pk %}">详情</a>
+                    {% if can_manage %}
+                    <a href="{% url 'assets:asset_edit' asset.pk %}">编辑</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="muted">暂无资产</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

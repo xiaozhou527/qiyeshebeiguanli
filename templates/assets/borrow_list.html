@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block page_title %}领用归还{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-header">
+        <h3>领用记录</h3>
+        {% if can_manage %}
+        <a class="btn btn-primary" href="{% url 'assets:borrow_create' %}">登记领用</a>
+        {% endif %}
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>资产</th>
+                <th>领用人</th>
+                <th>部门</th>
+                <th>领用时间</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.asset.name }}</td>
+                <td>{{ record.borrower.username }}</td>
+                <td>{{ record.department.name }}</td>
+                <td>{{ record.borrowed_at|date:"Y-m-d H:i" }}</td>
+                <td>{{ record.get_status_display }}</td>
+                <td>
+                    {% if can_manage and record.status != 'returned' %}
+                    <form method="post" action="{% url 'assets:borrow_return' record.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="returned_at" value="">
+                        <input type="hidden" name="note" value="后台登记归还">
+                        <button class="btn btn-light" type="submit">登记归还</button>
+                    </form>
+                    {% elif record.status == 'returned' %}
+                    已归还
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="muted">暂无记录</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

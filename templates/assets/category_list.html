@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block page_title %}资产分类{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-header">
+        <h3>分类列表</h3>
+        {% if can_manage %}
+        <a class="btn btn-primary" href="{% url 'assets:category_create' %}">新增分类</a>
+        {% endif %}
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>编码</th>
+                <th>名称</th>
+                <th>上级分类</th>
+                <th>启用</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td>{{ category.code }}</td>
+                <td>{{ category.name }}</td>
+                <td>{{ category.parent.name|default:"-" }}</td>
+                <td>{{ category.is_active|yesno:"是,否" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="muted">暂无分类</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block page_title %}资产详情{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-header">
+        <h3>{{ asset.name }}</h3>
+        {% if can_manage %}
+        <a class="btn btn-light" href="{% url 'assets:asset_edit' asset.pk %}">编辑资产</a>
+        {% endif %}
+    </div>
+    <div class="detail-grid">
+        <div><span>资产编号</span><strong>{{ asset.code }}</strong></div>
+        <div><span>资产分类</span><strong>{{ asset.category.name }}</strong></div>
+        <div><span>品牌型号</span><strong>{{ asset.brand }} {{ asset.model }}</strong></div>
+        <div><span>购买日期</span><strong>{{ asset.purchase_date|date:"Y-m-d"|default:"-" }}</strong></div>
+        <div><span>使用部门</span><strong>{{ asset.department.name|default:"-" }}</strong></div>
+        <div><span>使用人</span><strong>{{ asset.assignee.username|default:"-" }}</strong></div>
+        <div><span>状态</span><strong>{{ asset.get_status_display }}</strong></div>
+        <div><span>位置</span><strong>{{ asset.location|default:"-" }}</strong></div>
+    </div>
+    <p class="detail-note">{{ asset.remarks|default:"暂无备注" }}</p>
+</section>
+
+<section class="panel-grid">
+    <article class="panel">
+        <div class="panel-header">
+            <h3>最近领用记录</h3>
+            {% if can_manage %}
+            <a class="btn btn-light" href="{% url 'assets:borrow_create' %}">登记领用</a>
+            {% endif %}
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>领用人</th>
+                    <th>部门</th>
+                    <th>时间</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in asset.borrow_records.all|slice:":5" %}
+                <tr>
+                    <td>{{ record.borrower.username }}</td>
+                    <td>{{ record.department.name }}</td>
+                    <td>{{ record.borrowed_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ record.get_status_display }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="muted">暂无记录</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+
+    <article class="panel">
+        <div class="panel-header">
+            <h3>最近维修记录</h3>
+            {% if can_manage %}
+            <a class="btn btn-light" href="{% url 'assets:maintenance_create' %}">登记维修</a>
+            {% endif %}
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>状态</th>
+                    <th>维修单位</th>
+                    <th>开始时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in asset.maintenance_records.all|slice:":5" %}
+                <tr>
+                    <td>{{ record.get_status_display }}</td>
+                    <td>{{ record.maintenance_vendor|default:"-" }}</td>
+                    <td>{{ record.started_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="muted">暂无记录</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+</section>
+{% endblock %}
