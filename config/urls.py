@@ -11,5 +11,6 @@ urlpatterns = [
     path("", include("apps.core.urls")),
     path("", include("apps.dashboard.urls")),
     path("", include("apps.assets.urls")),
+    path("", include("apps.ai.urls")),
     path("api/v1/", include("apps.assets.api_urls")),
 ]

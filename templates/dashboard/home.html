@@ -33,6 +33,20 @@
     </article>
 </section>
 
+{% if request.user.is_staff %}
+<section class="panel">
+    <div class="panel-header">
+        <h3>AI 助手管理</h3>
+        <a class="btn btn-light" href="/admin/ai/">打开 AI 后台</a>
+    </div>
+    <div class="button-row">
+        <a class="btn btn-light" href="/admin/ai/aiconfig/">AI 配置</a>
+        <a class="btn btn-light" href="/admin/ai/chatsession/">对话会话</a>
+        <a class="btn btn-light" href="/admin/ai/chatmessage/">对话消息</a>
+    </div>
+</section>
+{% endif %}
+
 <section class="panel-grid">
     <article class="panel">
         <div class="panel-header">

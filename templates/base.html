@@ -64,5 +64,8 @@
         </main>
     </div>
     <script src="{% static 'js/app.js' %}"></script>
+    {% if request.user.is_authenticated %}
+    {% include "ai/chat_widget.html" %}
+    {% endif %}
 </body>
 </html>

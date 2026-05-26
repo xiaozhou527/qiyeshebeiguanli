@@ -2,11 +2,15 @@ import os
 from pathlib import Path
 
 import pymysql
+from dotenv import load_dotenv
 
 pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load local development environment variables from the project root .env file.
+load_dotenv(BASE_DIR / ".env")
 
 
 SECRET_KEY = os.getenv(
@@ -31,6 +35,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.assets",
     "apps.dashboard",
+    "apps.ai",
 ]
 
 MIDDLEWARE = [
@@ -150,6 +155,10 @@ ASSET_APP = {
     "ENABLE_NOTIFICATIONS": os.getenv("ENABLE_NOTIFICATIONS", "false").lower()
     == "true",
 }
+
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "")
+DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
+DEEPSEEK_MODEL = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
